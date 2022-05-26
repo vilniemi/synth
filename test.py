@@ -9,7 +9,7 @@ def oscilate(channel1, freq, amp, seconds):
     #sin
     buffer = amp* np.sin(2 * np.pi * np.arange(fs) * freq / fs).astype(np.float32) 
     #triangle
-    buffer = amp* np.arcsin(np.sin(2 * np.pi * np.arange(fs) * freq / fs)).astype(np.float32)
+   # buffer = amp* np.arcsin(np.sin(2 * np.pi * np.arange(fs) * freq / fs)).astype(np.float32)
     #square
     #buffer = amp * sg.square(2 * np.pi * freq * np.arange(fs) / fs).astype(np.float32)
     #sawtooth
@@ -43,11 +43,11 @@ while(True):
                 freq = 210
             elif(event.key ==  pygame.K_c):
                 freq = 310
-            oscilate(channel1, freq, 1, 0.5)
+            oscilate(channel1, freq, 1, 2)
 
         if event.type == pygame.KEYUP:
             #channel1.fadeout(2000)
-            #channel1.stop()
+            channel1.stop()
             print ('key up')
                 
                 #oscilate(freq)
