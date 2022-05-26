@@ -32,17 +32,54 @@ pygame.init()
 clock = pygame.time.Clock()
 display = pygame.display.set_mode((300, 300))
 channel1 = pygame.mixer.Channel(0)
-freq = 440
+
+freqC = 16.35
+freqCs = 17.32
+freqD = 18.35
+freqDs = 19.45
+freqE = 20.60
+freqF = 21.83
+freqFs = 23.12
+freqG = 24.50
+freqGs = 25.96
+freqA = 27.50
+freqAs = 29.14
+freqB = 30.87
+
+octave = 4;
+
 while(True):
     freq = 0
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_z:
-                freq = 110
-            elif( event.key == pygame.K_x):
-                freq = 210
-            elif(event.key ==  pygame.K_c):
-                freq = 310
+            if event.key == pygame.K_a:
+                freq = freqC * 2**octave;
+            elif( event.key == pygame.K_w):
+                freq = freqCs * 2**octave;
+            elif( event.key == pygame.K_s):
+                freq = freqD * 2**octave;
+            elif( event.key == pygame.K_e):
+                freq = freqDs * 2**octave;
+            elif(event.key ==  pygame.K_d):
+                freq = freqE * 2**octave;
+            elif(event.key ==  pygame.K_f):
+                freq = freqF * 2**octave;
+            elif( event.key == pygame.K_t):
+                freq = freqFs * 2**octave;
+            elif(event.key ==  pygame.K_g):
+                freq = freqG * 2**octave;
+            elif( event.key == pygame.K_y):
+                freq = freqGs * 2**octave;
+            elif(event.key ==  pygame.K_h):
+                freq = freqA * 2**octave;
+            elif( event.key == pygame.K_u):
+                freq = freqAs * 2**octave;
+            elif(event.key ==  pygame.K_j):
+                freq = freqB * 2**octave;
+            elif(event.key == pygame.K_UP):
+                octave += 1;
+            elif(event.key == pygame.K_DOWN):
+                octave -= 1;
             oscilate(channel1, freq, 1, 2)
 
         if event.type == pygame.KEYUP:
