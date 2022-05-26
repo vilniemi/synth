@@ -1,5 +1,15 @@
 import re
-f = open("toccata.synth","r")
+import sys
+
+if (len(sys.argv) < 2):
+    print ("give filename")
+    exit(0)
+
+filename = sys.argv[1]
+
+f = open(filename,"r")
+#path.is_file()
+
 lines = f.readlines()
 # def get_token(str):
 #     for c in str:
@@ -53,6 +63,6 @@ for line in lines:
     
     #print (data)
     #print(line, end="")
-print ("tempo: "+tempo)
+#print ("tempo: "+tempo)
 #print (tracks)
 print (tracks_dict)
