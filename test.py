@@ -17,10 +17,10 @@ def oscilate(channel1, freq, amp, seconds):
     duration = 2
     #buffer = (np.modf(np.arange(fs*duration)*freq/fs)[0]*2.0-1.0).astype(np.float32)
     sound = pygame.mixer.Sound(buffer)
-    #channel1.play(sound, loops = -1)
-    channel1.play(sound)
-    time.sleep(seconds)
-    channel1.fadeout(1)
+    channel1.play(sound, loops = -1)
+   # channel1.play(sound)
+    #time.sleep(seconds)
+    #channel1.fadeout(1)
     #channel1.stop()
     #pygame.time.wait(int(sound.get_length() * 1))
 
@@ -49,5 +49,6 @@ while(True):
             #channel1.fadeout(2000)
             channel1.stop()
             print ('key up')
+    clock.tick(50)
                 
-                #oscilate(freq)
+   #oscilate(channel1, freq, 1, 2)
