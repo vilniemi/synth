@@ -17,7 +17,7 @@ lines = f.readlines()
 def get_note(str):
     exit
 tracks = []
-tracks_dict = {}
+tracks_arr = []
 tempo = 0
 for line in lines:
     if (line[0] == '#'):
@@ -49,14 +49,15 @@ for line in lines:
             #print ("note: "+note+" seconds: "+seconds)
             #print (tune)
             track.append(tune)
-        
-        tracks_dict['tracknum'] = tracknum
+        tracks_dict_row = {}
+        tracks_dict_row['tracknum'] = tracknum
         if (int(tracknum)-1 < len(tracks)):
-            tracks_dict['wave'] = tracks[int(tracknum)-1]
+            tracks_dict_row['wave'] = tracks[int(tracknum)-1]
         else:
             print ('error on '+tracknum+' track not exists')
         #print (tracks[0])
-        tracks_dict['track'] = track
+        tracks_dict_row['track'] = track
+        tracks_arr.append(tracks_dict_row)
     
 
    # if data[0] == 
@@ -65,4 +66,10 @@ for line in lines:
     #print(line, end="")
 #print ("tempo: "+tempo)
 #print (tracks)
-print (tracks_dict)
+#print (tracks_dict)
+#for track_elem in tracks_dict.items():
+   # print (track_elem['track'])
+for track in tracks_arr:
+    print (track['tracknum'])
+    for tune in track['track']:
+        print (tune['tone'])
