@@ -101,16 +101,18 @@ def play_synth(tracknum, tracks_arr):
         # print(freq)
        # print(threadname)
         oscilate(channel1, freq, tracks_arr[tracknum]['wave'], 0.1, beat * float(tune['seconds']))
-def make_frequencies():
-    frequencies = []
-    for i in range (0, 7*12):
-        frequencies.append(False)
+def make_frequencies(track):
+    frequencies = {}
+    for tune in track['track']:
+        frequencies[find_freq(tune)] = False
+    #     frequencies.append(False)
+
     return frequencies
 
 def update(dt, progressed_time, track, frequencies):
     #print(progressed_time)
     beat_num = find_beat(progressed_time, 60)
-    frequencies = update_notes(beat_num, track, frequencies, progressed_time)
+    frequencies = update_notes(beat_num, track, frequencies, progressed_time, 0)
 
 
 def find_beat(progressed_time, tempo):
@@ -177,7 +179,7 @@ def find_freq(tune):
         freq = 0
     return freq
 
-def update_notes(beat_num, track, frequencies, progressed_time):
+def update_notes(beat_num, track, frequencies, progressed_time, last_freq):
     seconds = 0
     i = 0
     for tune in track['track']:
@@ -185,8 +187,12 @@ def update_notes(beat_num, track, frequencies, progressed_time):
         if (seconds >= progressed_time):
             break
         i = i+1
-    print (tune['tone'])
-        #print (tune['tone'] + tune['seconds'])
+    #print (tune['tone'])
+    #print (tune['tone'] + tune['seconds'])
+    freq = find_freq(tune)
+    if (freq != last_freq):
+        frequencies[freq] = True
+        frequencies[last_freq] = False
     return frequencies
 
 def gameloop():
@@ -195,11 +201,12 @@ def gameloop():
     progressed_time = 1
     clock = pygame.time.Clock()
     fps = 60
-    frequencies = make_frequencies()
     tracks = open_file('Toccata.synth')
+    frequencies = make_frequencies(tracks[5])
     while (Running):
         update(dt, progressed_time, tracks[5], frequencies)
         dt = clock.tick(fps)/1000.0
+        #print (frequencies)
         progressed_time += dt
 
 
