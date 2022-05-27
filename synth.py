@@ -8,6 +8,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from sys import exit
 from multiprocessing import Process
+import re
 
 def oscilate(instruments, amp, dt):
    # print("Seconds = ", seconds);
@@ -80,32 +81,35 @@ def find_freq(tune):
         octave = 5
     if '7' in tune['tone']:
         octave = 6
-    if 'c' in tune['tone']:
-        freq = freqC * 2**octave
-    if 'c#' in tune['tone']:
+    if ('c' in tune['tone'] and '#' in tune['tone']) or ('d' in tune['tone'] and 'b' in tune['tone']):
         freq = freqCs * 2**octave
-    if 'd' in tune['tone']:
-        freq = freqD * 2**octave
-    if 'd#' in tune['tone']:
+    elif 'c' in tune['tone']:
+        freq = freqC * 2**octave
+    elif ('d' in tune['tone'] and '#' in tune['tone']) or ('e' in tune['tone'] and 'b' in tune['tone']):
         freq = freqDs * 2**octave
-    if 'e' in tune['tone']:
+    elif 'd' in tune['tone']:
+        freq = freqD * 2**octave
+    elif 'e' in tune['tone']:
         freq = freqE * 2**octave
-    if 'f' in tune['tone']:
-        freq = freqF * 2**octave
-    if 'f#' in tune['tone']:
+    elif ('f' in tune['tone'] and '#' in tune['tone']) or ('g' in tune['tone'] and 'b' in tune['tone']):
         freq = freqFs * 2**octave
-    if 'g' in tune['tone']:
-        freq = freqG * 2**octave
-    if  'g#' in tune['tone']:
+    elif 'f' in tune['tone']:
+        freq = freqF * 2**octave
+    elif ('g' in tune['tone'] and '#' in tune['tone']) or ('a' in tune['tone'] and 'b' in tune['tone']):
         freq = freqGs * 2**octave
-    if 'a' in tune['tone']:
-        freq = freqA * 2**octave
-    if 'a#' in tune['tone']:
+    elif 'g' in tune['tone']:
+        freq = freqG * 2**octave
+    elif ('a' in tune['tone'] and '#' in tune['tone']) or (re.search("b\d*b", tune['tone'])):
         freq = freqAs * 2**octave
-    if 'b' in tune['tone']:
+    elif 'a' in tune['tone']:
+        freq = freqA * 2**octave
+    elif 'b' in tune['tone']:
         freq = freqB * 2**octave
-    if 'r' in tune['tone']:
+    elif 'r' in tune['tone']:
         freq = 0
+    print (tune['tone'])
+    print(freq)
+    print()
     return freq
 
 def update_instrument(instrument, progressed_time, beat):
@@ -136,7 +140,7 @@ def gameloop():
     progressed_time = 1
     clock = pygame.time.Clock()
     fps = 60
-    tracksparser = open_file('./examples/Cantina_Band.synth')
+    tracksparser = open_file('./examples/Imperial_March.synth')
     tracks = tracksparser[0]
     tempo = tracksparser[1]
     pygame.mixer.set_num_channels(len(tracks))
@@ -171,3 +175,42 @@ def gameloop():
 
 #display = pygame.display.set_mode((300, 300))
 gameloop()
+
+# while(True):
+#     freq = 0
+#     for event in pygame.event.get():
+#         if event.type == pygame.KEYDOWN:
+#             if event.key == pygame.K_a:
+#                 freq = freqC * 2**octave;
+#             elif( event.key == pygame.K_w):
+#                 freq = freqCs * 2**octave;
+#             elif( event.key == pygame.K_s):
+#                 freq = freqD * 2**octave;
+#             elif( event.key == pygame.K_e):
+#                 freq = freqDs * 2**octave;
+#             elif(event.key ==  pygame.K_d):
+#                 freq = freqE * 2**octave;
+#             elif(event.key ==  pygame.K_f):
+#                 freq = freqF * 2**octave;
+#             elif( event.key == pygame.K_t):
+#                 freq = freqFs * 2**octave;
+#             elif(event.key ==  pygame.K_g):
+#                 freq = freqG * 2**octave;
+#             elif( event.key == pygame.K_y):
+#                 freq = freqGs * 2**octave;
+#             elif(event.key ==  pygame.K_h):
+#                 freq = freqA * 2**octave;
+#             elif( event.key == pygame.K_u):
+#                 freq = freqAs * 2**octave;
+#             elif(event.key ==  pygame.K_j):
+#                 freq = freqB * 2**octave;
+#             elif(event.key == pygame.K_UP):
+#                 octave += 1;
+#             elif(event.key == pygame.K_DOWN):
+#                 octave -= 1;
+#             oscilate(channel1, freq, 1, 2)
+
+#         if event.type == pygame.KEYUP:
+#             channel1.stop()
+#             print ('key up')
+#     clock.tick(50)
