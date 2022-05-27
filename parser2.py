@@ -6,8 +6,8 @@ import sys
 #     exit(0)
 
 # filename = sys.argv[1]
-
 def open_file(filename):
+    global tempo
     f = open(filename,"r")
     #path.is_file()
 
@@ -19,7 +19,8 @@ def open_file(filename):
         exit
     tracks = []
     tracks_arr = []
-    tempo = 0
+    tempo = 60
+    last_octave = 4
     for line in lines:
         if (line[0] == '#'):
             continue
@@ -48,7 +49,17 @@ def open_file(filename):
                         seconds = "0"
                 else:
                     seconds = elem[1]
+                
                 tune['seconds'] = seconds
+                octave = re.findall(r'\d+', note)
+                if (len(octave) == 0):
+                    #print("no ocatve", note)
+                    if (note[:1] != 'r'):
+                        note = note[:1] + str(last_octave) + note[1:]
+                else:
+                    #print(octave)
+                    last_octave = octave[0]
+                #print (note)
                 tune['tone'] = note
                 #print ("note: "+note+" seconds: "+seconds)
                 #print (tune)
@@ -63,7 +74,7 @@ def open_file(filename):
             #print (tracks[0])
             tracks_dict_row['track'] = track
             tracks_arr.append(tracks_dict_row)
-    return (tracks_arr)
+    return (tracks_arr, tempo)
 
    # if data[0] == 
     
@@ -88,3 +99,6 @@ def open_file(filename):
 
 # for sdsd in  tracks_arr[1]['track']:
 #     print (sdsd)
+
+# tracksparser = open_file('./examples/Super_Mario.synth')
+
