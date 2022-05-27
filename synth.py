@@ -28,12 +28,15 @@ def oscilate(instruments, amp, dt):
         #sawtooth
         if (wave =='sawtooth'):
             buffer = amp * sg.sawtooth(2 * np.pi * freq * np.arange(fs) / fs).astype(np.float32)
+
         sound = pygame.mixer.Sound(buffer)
         #channel.play(sound)
-        if (instrument['just_started'] == True):
+        if (instrument['just_started'] == True and freq != 0):
             instrument['just_started'] = False
-            print (dt, " ", freq, " ", instrument['seconds'])
-            channel.play(sound, loops=-1)
+            print (dt, " ", freq, " ", instrument['seconds'], " " )
+            print (buffer)
+            #channel.play(sound, loops=-1)
+            channel.play(sound, maxtime=int(instrument['seconds']*1000))
         #print (frequencies)
     # for instrument in instruments:
     #     instrument['seconds'] -= dt
@@ -291,7 +294,6 @@ def gameloop():
         if (current_beat != last_beat):
             print("["+str(current_beat)+"]")
             last_beat = current_beat
-            current_beat
         play_instruments(instruments, dt)
             #
         #oscilate(channel1, wave, 0.1, 1)
