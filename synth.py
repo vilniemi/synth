@@ -7,7 +7,6 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from sys import exit
-freq = 440
 from multiprocessing import Process
 
 def oscilate(instruments, amp, dt):
@@ -29,18 +28,19 @@ def oscilate(instruments, amp, dt):
         #sawtooth
         if (wave =='sawtooth'):
             buffer = amp * sg.sawtooth(2 * np.pi * freq * np.arange(fs) / fs).astype(np.float32)
-        # for f in frequencies:
-        #     buffer = amp* np.sin(2 * np.pi * np.arange(fs) * f / fs).astype(np.float32) 
         sound = pygame.mixer.Sound(buffer)
         #channel.play(sound)
-        if (instrument['playing'] == True):
+        if (instrument['just_started'] == True):
+            instrument['just_started'] = False
+            print (dt, " ", freq, " ", instrument['seconds'])
             channel.play(sound, loops=-1)
         #print (frequencies)
-    for instrument in instruments:
-        instrument['seconds'] -= dt
-        if (instrument['seconds'] < 0):
-            instrument['playing'] = False
-            instrument['channel'].stop()
+    # for instrument in instruments:
+    #     instrument['seconds'] -= dt
+        #if (instrument['seconds'] <= 0):
+            #print('stop channel')
+            #instrument['playing'] = False
+            #instrument['channel'].stop()
     #channel.stop()
 
 def play_synth(tracknum, tracks_arr):
@@ -215,16 +215,20 @@ def update_notes(beat_num, track, frequencies, progressed_time, last_freq):
 def update_instrument(instrument, progressed_time):
     seconds = 0
     track = instrument['track']
+    i = 0
     for tune in track['track']:
         seconds = seconds + float(tune['seconds'])
         if (seconds >= progressed_time):
             break
+        i = i+1
     instrument['freq'] = find_freq(tune)
-    if instrument['freq'] == 0:
-        instrument['playing'] = False
-    else:
-        instrument['playing'] = True
-    instrument['seconds'] = float(tune['seconds'])
+    # if instrument['freq'] == 0:
+    #     instrument['playing'] = False
+    # else:
+    if i != instrument['lastfreq']:
+        instrument['lastfreq'] = i
+        instrument['just_started'] = True
+        instrument['seconds'] = float(tune['seconds'])
     return instrument
     #instrument['freq']
 
@@ -255,7 +259,9 @@ def gameloop():
         instrument['time'] = 0
         instrument['wave'] = track['wave']
         instrument['track'] = track
-        instrument['seconds'] = 0
+        instrument['seconds'] = 0 
+        instrument['lastfreq'] = -1
+        instrument['just_started'] = False
         instrument['channel'] = pygame.mixer.Channel(i)
         instruments.append(instrument)
 
@@ -264,8 +270,9 @@ def gameloop():
     # instrument['playing'] = False
     # instrument['time'] = 0
     # instrument['wave'] = 'sine'
-    # instrument['track'] = tracks[5]
+    # instrument['track'] = tracks[7]
     # instrument['seconds'] = 0
+    # instrument['lastfreq'] = -1
     # instrument['channel'] = pygame.mixer.Channel(0)
     # instruments.append(instrument)
 
@@ -280,11 +287,13 @@ def gameloop():
        # print (progressed_time)
        
         current_beat = find_beat(progressed_time, 60)
-       # print(current_beat)
-        #if (current_beat != last_beat):
-            #print ('play')
+        
+        if (current_beat != last_beat):
+            print("["+str(current_beat)+"]")
+            last_beat = current_beat
+            current_beat
         play_instruments(instruments, dt)
-        #    last_beat = current_beat
+            #
         #oscilate(channel1, wave, 0.1, 1)
         dt = clock.tick(fps)/1000.0
         #print (frequencies)
@@ -292,7 +301,7 @@ def gameloop():
 
 
 
-display = pygame.display.set_mode((300, 300))
+#display = pygame.display.set_mode((300, 300))
 # play_synth(5, file)
 # #game_loop()
 
