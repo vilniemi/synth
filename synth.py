@@ -33,8 +33,7 @@ def oscilate(instruments, amp, dt):
         #channel.play(sound)
         if (instrument['just_started'] == True and freq != 0):
             instrument['just_started'] = False
-            print (dt, " ", freq, " ", instrument['seconds'], " " )
-            print (buffer)
+            #print (dt, " ", freq, " ", instrument['seconds'], " " )
             #channel.play(sound, loops=-1)
             channel.play(sound, maxtime=int(instrument['seconds']*1000))
         #print (frequencies)
@@ -119,7 +118,7 @@ def play_synth(tracknum, tracks_arr):
 
         # print(freq)
        # print(threadname)
-        oscilate(channel1, freq, tracks_arr[tracknum]['wave'], 0.1, beat * float(tune['seconds']))
+        oscilate(channel1, freq, tracks_arr[tracknum]['wave'], 0.1, float(tune['seconds']))
 def make_frequencies(track):
     frequencies = {}
     for tune in track['track']:
@@ -215,12 +214,12 @@ def update_notes(beat_num, track, frequencies, progressed_time, last_freq):
     frequencies[freq] = tune['seconds']
         #frequencies[last_freq] = 0
     return frequencies
-def update_instrument(instrument, progressed_time):
+def update_instrument(instrument, progressed_time, beat):
     seconds = 0
     track = instrument['track']
     i = 0
     for tune in track['track']:
-        seconds = seconds + float(tune['seconds'])
+        seconds = seconds + 60/int(beat)*float(tune['seconds'])
         if (seconds >= progressed_time):
             break
         i = i+1
@@ -243,7 +242,6 @@ def play_instruments(instrument, dt):
     oscilate(instrument,  0.1, dt)
 
 def gameloop():
-    global freq
     pygame.mixer.init(size=32)
     pygame.init()
     Running = True
@@ -251,8 +249,10 @@ def gameloop():
     progressed_time = 1
     clock = pygame.time.Clock()
     fps = 60
-    pygame.mixer.set_num_channels(15)
-    tracks = open_file('Toccata.synth')
+    tracksparser = open_file('./examples/Cantina_Band.synth')
+    tracks = tracksparser[0]
+    tempo = tracksparser[1]
+    pygame.mixer.set_num_channels(len(tracks))
     instruments = []
     i = 0
     for track in tracks:
@@ -267,6 +267,7 @@ def gameloop():
         instrument['just_started'] = False
         instrument['channel'] = pygame.mixer.Channel(i)
         instruments.append(instrument)
+        i+=1
 
     # instrument = {}
     # instrument['freq'] = 0
@@ -284,12 +285,12 @@ def gameloop():
     while (Running):
         #update(dt, progressed_time, tracks[5], instrument)
         for instrument in instruments:
-            update_instrument(instrument, progressed_time)
+            update_instrument(instrument, progressed_time, tempo)
         #update(dt, progressed_time, tracks[6], frequencies2)
         #play_instruments2(tracks[5], tracks[6], channel1, channel2, progressed_time)
        # print (progressed_time)
        
-        current_beat = find_beat(progressed_time, 60)
+        current_beat = find_beat(progressed_time, tempo)
         
         if (current_beat != last_beat):
             print("["+str(current_beat)+"]")
