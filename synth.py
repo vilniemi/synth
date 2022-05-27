@@ -11,40 +11,24 @@ from multiprocessing import Process
 import re
 
 def oscilate(instruments, amp, dt):
-   # print("Seconds = ", seconds);
     fs = 44100
-    #sin
     for instrument in instruments:
         wave = instrument['wave']
         freq = instrument['freq']
         channel = instrument['channel']
         if (wave == 'sine'):
             buffer = amp* np.sin(2 * np.pi * np.arange(fs) * freq / fs).astype(np.float32) 
-        #triangle
         if (wave =='triangle'):
             buffer = amp* np.arcsin(np.sin(2 * np.pi * np.arange(fs) * freq / fs)).astype(np.float32)
-        #square
         if (wave =='square'):
             buffer = amp * sg.square(2 * np.pi * freq * np.arange(fs) / fs).astype(np.float32)
-        #sawtooth
         if (wave =='saw'):
             buffer = amp * sg.sawtooth(2 * np.pi * freq * np.arange(fs) / fs).astype(np.float32)
 
         sound = pygame.mixer.Sound(buffer)
-        #channel.play(sound)
         if (instrument['just_started'] == True and freq != 0):
             instrument['just_started'] = False
-            #print (dt, " ", freq, " ", instrument['seconds'], " " )
-            #channel.play(sound, loops=-1)
             channel.play(sound, maxtime=int(instrument['seconds']*1000))
-        #print (frequencies)
-    # for instrument in instruments:
-    #     instrument['seconds'] -= dt
-        #if (instrument['seconds'] <= 0):
-            #print('stop channel')
-            #instrument['playing'] = False
-            #instrument['channel'].stop()
-    #channel.stop()
 
 def find_beat(progressed_time, tempo):
     int_time = int(progressed_time)
@@ -127,13 +111,17 @@ def update_instrument(instrument, progressed_time, beat):
 
 def check_keys():
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                print("quit")
-                pygame.quit()
+            if event.key == pygame.K_ESCAPE:
+                exit()
+
 def gameloop(filename):
     pygame.mixer.init(size=32)
     pygame.init()
+    pygame.display.set_caption('minisynth')
+    #pygame.display.set_icon(Icon_name)
     Running = True
     dt = 0
     progressed_time = 1
@@ -159,28 +147,24 @@ def gameloop(filename):
         instruments.append(instrument)
         i+=1
     last_beat = -1
+
     while (Running):
-        for instrument in instruments:
-            update_instrument(instrument, progressed_time, tempo)
-        current_beat = find_beat(progressed_time, tempo)
-        if (current_beat != last_beat):
-            print("\r", end="")
-            i = 1
-            num_bar = 50
-            print("beat: ", current_beat, end="")
-            #print("["+str(current_beat)+"]")
-            last_beat = current_beat
-        oscilate(instruments,  0.1, dt)
-        dt = clock.tick(fps)/1000.0
-        check_keys()
-        progressed_time += dt
+            for instrument in instruments:
+                update_instrument(instrument, progressed_time, tempo)
+            current_beat = find_beat(progressed_time, tempo)
+            if (current_beat != last_beat):
+                print("\r", end="")
+                i = 1
+                num_bar = 50
+                print("beat: ", current_beat, end="")
+                #print("["+str(current_beat)+"]")
+                last_beat = current_beat
+            oscilate(instruments,  0.1, dt)
+            dt = clock.tick(fps)/1000.0
+            check_keys()
+            progressed_time += dt
 
-
- 
-   
-    #progression_bar
-
-#display = pygame.display.set_mode((300, 300))
+display = pygame.display.set_mode((300, 300))
 if (len(sys.argv) < 2):
     print ("give filename")
     exit(0)
