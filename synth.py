@@ -6,7 +6,7 @@ import time
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-from sys import exit
+from sys import exit 
 from multiprocessing import Process
 import re
 
@@ -107,9 +107,6 @@ def find_freq(tune):
         freq = freqB * 2**octave
     elif 'r' in tune['tone']:
         freq = 0
-    print (tune['tone'])
-    print(freq)
-    print()
     return freq
 
 def update_instrument(instrument, progressed_time, beat):
@@ -122,17 +119,19 @@ def update_instrument(instrument, progressed_time, beat):
             break
         i = i+1
     instrument['freq'] = find_freq(tune)
-    # if instrument['freq'] == 0:
-    #     instrument['playing'] = False
-    # else:
     if i != instrument['lastfreq']:
         instrument['lastfreq'] = i
         instrument['just_started'] = True
         instrument['seconds'] = float(tune['seconds'])
     return instrument
-    #instrument['freq']
 
-def gameloop():
+def check_keys():
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                print("quit")
+                pygame.quit()
+def gameloop(filename):
     pygame.mixer.init(size=32)
     pygame.init()
     Running = True
@@ -140,7 +139,7 @@ def gameloop():
     progressed_time = 1
     clock = pygame.time.Clock()
     fps = 60
-    tracksparser = open_file('./examples/Imperial_March.synth')
+    tracksparser = open_file(filename)
     tracks = tracksparser[0]
     tempo = tracksparser[1]
     pygame.mixer.set_num_channels(len(tracks))
@@ -165,16 +164,29 @@ def gameloop():
             update_instrument(instrument, progressed_time, tempo)
         current_beat = find_beat(progressed_time, tempo)
         if (current_beat != last_beat):
-            print("["+str(current_beat)+"]")
+            print("\r", end="")
+            i = 1
+            num_bar = 50
+            print("beat: ", current_beat, end="")
+            #print("["+str(current_beat)+"]")
             last_beat = current_beat
         oscilate(instruments,  0.1, dt)
         dt = clock.tick(fps)/1000.0
+        check_keys()
         progressed_time += dt
 
 
+ 
+   
+    #progression_bar
 
 #display = pygame.display.set_mode((300, 300))
-gameloop()
+if (len(sys.argv) < 2):
+    print ("give filename")
+    exit(0)
+
+filename = sys.argv[1]
+gameloop(filename)
 
 # while(True):
 #     freq = 0
