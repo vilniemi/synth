@@ -116,6 +116,17 @@ def check_keys():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 exit()
+def find_length(tracks, beat):
+    longest_length = 0
+    seconds = 0
+    for track in tracks:
+        for tune in track['track']:
+            seconds = seconds + 60/int(beat)*float(tune['seconds'])
+        if seconds > longest_length:
+            longest_length = seconds
+        seconds = 0
+    return (longest_length)
+
 
 def gameloop(filename):
     pygame.mixer.init(size=32)
@@ -133,6 +144,7 @@ def gameloop(filename):
     pygame.mixer.set_num_channels(len(tracks))
     instruments = []
     i = 0
+    length = find_length(tracks, tempo)
     for track in tracks:
         instrument = {}
         instrument['freq'] = 0
@@ -156,13 +168,15 @@ def gameloop(filename):
                 print("\r", end="")
                 i = 1
                 num_bar = 50
-                print("beat: ", current_beat, end="")
+                print("time: ", int(progressed_time), "/", int(length), end="")
                 #print("["+str(current_beat)+"]")
                 last_beat = current_beat
             oscilate(instruments,  0.1, dt)
             dt = clock.tick(fps)/1000.0
             check_keys()
             progressed_time += dt
+            if progressed_time > length:
+                exit()
 
 display = pygame.display.set_mode((300, 300))
 if (len(sys.argv) < 2):
