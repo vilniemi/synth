@@ -1,1 +1,1 @@
-Two days group project to discover audio generation
+Two days group project with Ian Gaplichnik to discover audio generation
